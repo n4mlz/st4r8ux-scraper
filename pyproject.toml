@@ -1,0 +1,6 @@
+[project]
+name = "st4r8ux-scraper"
+version = "0.1.0"
+description = "Minimal job scraper"
+requires-python = ">=3.11"
+dependencies = ["requests", "beautifulsoup4", "python-dotenv"]
