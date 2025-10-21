@@ -67,7 +67,7 @@ def parse_jobs(html: str):
     return list(uniq.values())
 
 
-def notify_discord(jobs):
+def notify_discord(jobs, include_empty=False):
     """Send notification to Discord."""
     webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
     if not webhook_url:
@@ -82,30 +82,40 @@ def notify_discord(jobs):
         if any(kw.lower() in j["store"].lower() for kw in target_keywords)
     ]
 
-    if not target:
-        print("No target jobs found")
-        return
+    if target:
+        embeds = []
+        for j in target[:10]:
+            title = f"{j['store']} — {j['role']}" if j["role"] else j["store"]
+            embeds.append(
+                {
+                    "title": title,
+                    "url": j["url"],
+                    "color": 0x00FF00,
+                }
+            )
 
-    embeds = []
-    for j in target[:10]:
-        title = f"{j['store']} — {j['role']}" if j["role"] else j["store"]
-        embeds.append(
-            {
-                "title": title,
-                "url": j["url"],
-                "color": 0x00FF00,
-            }
+        payload = {
+            "content": f"🆕 New jobs found: {len(target)} positions",
+            "embeds": embeds,
+        }
+        log_message = f"Notification sent for {len(target)} jobs"
+    else:
+        if not include_empty:
+            print("No target jobs found")
+            return
+
+        content = (
+            "ℹ️ New jobs were detected, but none matched the target keywords."
+            if jobs
+            else "ℹ️ No new jobs detected at this time."
         )
-
-    payload = {
-        "content": f"🆕 New jobs found: {len(target)} positions",
-        "embeds": embeds,
-    }
+        payload = {"content": content}
+        log_message = "Notification sent with no matching updates"
 
     try:
         response = requests.post(webhook_url, json=payload, timeout=10)
         response.raise_for_status()
-        print(f"Notification sent for {len(target)} jobs")
+        print(log_message)
     except Exception as e:
         print(f"Error sending notification: {e}")
 
@@ -133,7 +143,6 @@ def main():
 
     if new_jobs:
         print(f"Found {len(new_jobs)} new jobs")
-        notify_discord(new_jobs)
 
         # Update seen jobs with new jobs
         for job in new_jobs:
@@ -157,6 +166,8 @@ def main():
         # Save updated job information
         with open(data_file, "w") as f:
             json.dump({"seen_jobs": seen_jobs}, f, ensure_ascii=False, indent=2)
+
+    notify_discord(new_jobs, include_empty=True)
 
 
 if __name__ == "__main__":
