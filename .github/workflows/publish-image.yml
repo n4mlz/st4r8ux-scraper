@@ -11,6 +11,7 @@ on:
       - main.py
       - pyproject.toml
       - uv.lock
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -32,5 +33,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/n4mlz/st4r8ux-scraper:sha-${{ github.sha }}
-          labels: org.opencontainers.image.source=https://github.com/n4mlz/st4r8ux-scraper
+          tags: |
+            ghcr.io/n4mlz/st4r8ux-scraper:latest
+            ghcr.io/n4mlz/st4r8ux-scraper:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/n4mlz/st4r8ux-scraper
