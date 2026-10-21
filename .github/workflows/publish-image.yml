@@ -1,9 +1,16 @@
+# This workflow publishes an image when scraper source or dependencies change.
 name: Publish container image
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+    paths:
+      - .dockerignore
+      - .github/workflows/publish-image.yml
+      - Dockerfile
+      - main.py
+      - pyproject.toml
+      - uv.lock
 
 permissions:
   contents: read
@@ -25,8 +32,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/n4mlz/st4r8ux-scraper:latest
-            ghcr.io/n4mlz/st4r8ux-scraper:sha-${{ github.sha }}
-          labels: |
-            org.opencontainers.image.source=https://github.com/n4mlz/st4r8ux-scraper
+          tags: ghcr.io/n4mlz/st4r8ux-scraper:sha-${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/n4mlz/st4r8ux-scraper

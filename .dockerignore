@@ -1,6 +1,8 @@
-.git
+# Exclude local credentials and job state from image build context.
 .env
 .env.*
-data
+.git
+.venv
 __pycache__
+data
 *.py[cod]

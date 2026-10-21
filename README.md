@@ -2,6 +2,8 @@
 
 Minimal job scraper for Discord notifications.
 
+依存関係は `pyproject.toml` から `uv lock` で生成する `uv.lock` に固定する。
+
 ## Setup
 
 1. Copy environment file:

@@ -1,12 +1,15 @@
+# Build the scraper from its locked Python dependencies.
 FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY pyproject.toml ./
+RUN python -m pip install --no-cache-dir uv==0.13.0
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-install-project --no-dev
+
 COPY main.py ./
 
-RUN pip install -e .
-
-LABEL org.opencontainers.image.source="https://github.com/n4mlz/st4r8ux-scraper"
+ENV PATH="/app/.venv/bin:${PATH}"
 
 CMD ["python", "main.py"]
