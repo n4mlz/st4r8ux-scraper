@@ -1,8 +1,16 @@
+# This workflow publishes an image when scraper source or dependencies change.
 name: Publish container image
 
 on:
   push:
     branches: [main]
+    paths:
+      - .dockerignore
+      - .github/workflows/publish-image.yml
+      - Dockerfile
+      - main.py
+      - pyproject.toml
+      - uv.lock
   workflow_dispatch:
 
 permissions:
